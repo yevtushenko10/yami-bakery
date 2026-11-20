@@ -1,7 +1,7 @@
 import { business, products, type Language } from './data';
 import { translations } from './i18n';
 export type CartItem = { productId: string; variantId: string; quantity: number };
-export const money = (cents: number, lang: Language) => new Intl.NumberFormat({es:'es-ES',en:'en-IE',he:'he-IL'}[lang], { style:'currency',currency:'EUR' }).format(cents/100);
+export const money = (cents: number, lang: Language) => new Intl.NumberFormat({es:'es-ES',en:'en-IE'}[lang], { style:'currency',currency:'EUR' }).format(cents/100);
 export function details(item: CartItem) { const product = products.find(p=>p.id===item.productId)!; return {product,variant:product.variants.find(v=>v.id===item.variantId)!}; }
 export function sanitizeCart(value: unknown): CartItem[] {
  if (!Array.isArray(value)) return [];
@@ -11,7 +11,7 @@ export function sanitizeCart(value: unknown): CartItem[] {
 }
 export const total = (cart: CartItem[]) => cart.reduce((sum,item)=>sum+details(item).variant.price*item.quantity,0);
 function orderMoney(cents: number, lang: Language) {
- return `${new Intl.NumberFormat({es:'es-ES',en:'en-IE',he:'he-IL'}[lang], {minimumFractionDigits:2,maximumFractionDigits:2}).format(cents/100)} €`;
+ return `${new Intl.NumberFormat({es:'es-ES',en:'en-IE'}[lang], {minimumFractionDigits:2,maximumFractionDigits:2}).format(cents/100)} €`;
 }
 export function orderMessage(cart: CartItem[], lang: Language) {
  const t = translations[lang];

@@ -13,10 +13,9 @@ test('five products, variants, persistence, translated checkout and PDF',async({
  await page.getByRole('button',{name:'English',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('lang','en');
  await page.locator('.cart-trigger').click();await page.evaluate(()=>{(window as any).__opened='';window.open=(url)=>{(window as any).__opened=String(url);return null;};});
  await page.locator('.checkout').click();let url=new URL(await page.evaluate(()=>(window as any).__opened));expect(url.pathname).toBe('/34614034687');expect(url.searchParams.get('text')).toContain('MY ORDER');expect(url.searchParams.get('text')).toContain('90.70');await expect(page.locator('.cart-item')).toHaveCount(6);
- await page.getByRole('button',{name:'Close',exact:true}).click();await page.getByRole('button',{name:'עברית',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('dir','rtl');
- await page.reload();await expect(page.locator('html')).toHaveAttribute('lang','he');await page.locator('.cart-trigger').click();await page.evaluate(()=>{window.open=(url)=>{(window as any).__opened=String(url);return null;};});await page.locator('.checkout').click();url=new URL(await page.evaluate(()=>(window as any).__opened));expect(url.searchParams.get('text')).toContain('ההזמנה שלי');
+ await page.getByRole('button',{name:'Close',exact:true}).click();await page.reload();await expect(page.locator('html')).toHaveAttribute('lang','en');await page.locator('.cart-trigger').click();
  while(await page.locator('.remove-item').count())await page.locator('.remove-item').first().click();await expect(page.locator('.checkout')).toBeDisabled();
- await page.getByRole('button',{name:'סגירה',exact:true}).click();
+ await page.getByRole('button',{name:'Close',exact:true}).click();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  const pdf=await page.request.get('/yami-menu.pdf');expect(pdf.ok()).toBe(true);expect((await pdf.body()).subarray(0,4).toString()).toBe('%PDF');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('.catalog a[download]').click()]);expect(download.suggestedFilename()).toBe('Yami-Bakery-Menu.pdf');expect(await download.failure()).toBe(null);
@@ -28,11 +27,15 @@ test('responsive navigation and visual layout',async({page},testInfo)=>{
  if(testInfo.project.name==='mobile'){await page.locator('.mobile-toggle').click();await page.locator('.mobile-nav a[href="#products"]').click();await expect(page.locator('.mobile-nav')).toHaveCount(0);}else await page.locator('.desktop-nav a[href="#products"]').click();
  await expect(page).toHaveURL(/#products$/);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
-test('Spanish and Hebrew layouts fit narrow phones and tablets',async({page})=>{
- await page.goto('/');await page.emulateMedia({reducedMotion:'reduce'});
+test('Spanish and English layouts fit narrow phones and tablets',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('yami-language','he'));
+ await page.goto('/');
+ await expect(page.locator('html')).toHaveAttribute('lang','es');
+ await expect(page.locator('html')).toHaveAttribute('dir','ltr');
+ await expect(page.locator('.languages button')).toHaveCount(2);await page.emulateMedia({reducedMotion:'reduce'});
  for(const width of [320,768,1024]){
   await page.setViewportSize({width,height:900});
-  for(const name of ['Español','עברית']){
+  for(const name of ['Español','English']){
    await page.getByRole('button',{name,exact:true}).click();
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
    for(const card of await page.locator('.product-card').all()){
@@ -41,5 +44,5 @@ test('Spanish and Hebrew layouts fit narrow phones and tablets',async({page})=>{
   }
  }
  await page.setViewportSize({width:390,height:844});await page.locator('.product-challah .add-button').click();await page.locator('.cart-trigger').click();
- await page.screenshot({path:'tmp/hebrew-cart.png'});await page.keyboard.press('Escape');await expect(page.locator('.cart-drawer')).toHaveAttribute('aria-hidden','true');await expect(page.locator('.cart-trigger')).toBeFocused();
+ await page.screenshot({path:'tmp/english-cart.png'});await page.keyboard.press('Escape');await expect(page.locator('.cart-drawer')).toHaveAttribute('aria-hidden','true');await expect(page.locator('.cart-trigger')).toBeFocused();
 });

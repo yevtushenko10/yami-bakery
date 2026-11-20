@@ -4,7 +4,7 @@ Live website: https://yevtushenko10.github.io/yami-bakery/
 
 GitHub repository: https://github.com/yevtushenko10/yami-bakery
 
-Premium single-page React + TypeScript storefront using Yami Bakery's original logos and product photographs. Spanish (default), English, and Hebrew with RTL support.
+Premium single-page React + TypeScript storefront using Yami Bakery's original logos and product photographs. Spanish (default) and English.
 
 ## Run
 
@@ -33,7 +33,7 @@ GitHub Pages deploys automatically on pushes to `main` using `.github/workflows/
 ## Content and orders
 
 - `src/data.ts`: business links, product variants and prices in integer EUR cents.
-- `src/i18n.ts`: Spanish, English and Hebrew UI and order-message copy.
+- `src/i18n.ts`: Spanish and English UI and order-message copy.
 - `src/order.ts`: validated cart data, price formatting and WhatsApp message generation.
 - `public/images/`: original supplied brand assets and optimized product photos; brownies and almond cake cropped from the original menu.
 - `public/yami-menu.pdf`: printable A4 Spanish menu with selectable text, all prices and contact links.
